@@ -12,7 +12,7 @@ INTERFACE
 !**************************************************************************
 SUBROUTINE OL_READ_ATM (HSURF_FILETYPE, HFORCING_FILETYPE, KFORC_STEP,    &
                         PTA,PQA,PWIND,PDIR_SW,PSCA_SW,PLW,PSNOW,PRAIN,PPS,&
-                        PCO2,PDIR   )
+                        PDIR   )
 !
 !**************************************************************************
 IMPLICIT NONE
@@ -30,7 +30,7 @@ REAL, DIMENSION(:,:),INTENT(INOUT) :: PLW
 REAL, DIMENSION(:,:),INTENT(INOUT) :: PSNOW
 REAL, DIMENSION(:,:),INTENT(INOUT) :: PRAIN
 REAL, DIMENSION(:,:),INTENT(INOUT) :: PPS
-REAL, DIMENSION(:,:),INTENT(INOUT) :: PCO2
+!REAL, DIMENSION(:,:),INTENT(INOUT) :: PCO2
 REAL, DIMENSION(:,:),INTENT(INOUT) :: PDIR
 !
 END SUBROUTINE OL_READ_ATM
@@ -40,7 +40,7 @@ END MODULE MODI_OL_READ_ATM
 !**************************************************************************
 SUBROUTINE OL_READ_ATM (HSURF_FILETYPE, HFORCING_FILETYPE, KFORC_STEP,    &
                         PTA,PQA,PWIND,PDIR_SW,PSCA_SW,PLW,PSNOW,PRAIN,PPS,&
-                        PCO2,PDIR   )
+                        PDIR   )
 !**************************************************************************
 !
 !!    PURPOSE
@@ -96,7 +96,7 @@ REAL, DIMENSION(:,:),INTENT(INOUT) :: PLW
 REAL, DIMENSION(:,:),INTENT(INOUT) :: PSNOW
 REAL, DIMENSION(:,:),INTENT(INOUT) :: PRAIN
 REAL, DIMENSION(:,:),INTENT(INOUT) :: PPS
-REAL, DIMENSION(:,:),INTENT(INOUT) :: PCO2
+!REAL, DIMENSION(:,:),INTENT(INOUT) :: PCO2
 REAL, DIMENSION(:,:),INTENT(INOUT) :: PDIR
 !
 INTEGER,INTENT(IN)               :: KFORC_STEP
@@ -111,7 +111,7 @@ CHARACTER(LEN=6)    ,INTENT(IN)  :: HFORCING_FILETYPE
 IF (HFORCING_FILETYPE == 'ASCII ') THEN
   CALL OL_READ_ATM_ASCII  (HSURF_FILETYPE, KFORC_STEP,                       &
                            PTA,PQA,PWIND,PDIR_SW,PSCA_SW,PLW,PSNOW,PRAIN,PPS,&
-                           PCO2,PDIR              )
+                           PDIR              )
 ENDIF
 !
 END SUBROUTINE OL_READ_ATM

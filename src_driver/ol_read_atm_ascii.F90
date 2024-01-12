@@ -12,7 +12,7 @@ INTERFACE
 !**************************************************************************
 SUBROUTINE OL_READ_ATM_ASCII (HSURF_FILETYPE, KFORC_STEP,                 &
                               PTA,PQA,PWIND,PDIR_SW,PSCA_SW,PLW,PSNOW,    &
-                              PRAIN,PPS,PCO2,PDIR)
+                              PRAIN,PPS,PDIR)
 !
 !**************************************************************************
 IMPLICIT NONE
@@ -29,7 +29,7 @@ REAL, DIMENSION(:,:),INTENT(OUT) :: PLW
 REAL, DIMENSION(:,:),INTENT(OUT) :: PSNOW
 REAL, DIMENSION(:,:),INTENT(OUT) :: PRAIN
 REAL, DIMENSION(:,:),INTENT(OUT) :: PPS
-REAL, DIMENSION(:,:),INTENT(OUT) :: PCO2
+!REAL, DIMENSION(:,:),INTENT(OUT) :: PCO2
 REAL, DIMENSION(:,:),INTENT(OUT) :: PDIR
 !
 END SUBROUTINE OL_READ_ATM_ASCII
@@ -39,7 +39,7 @@ END MODULE MODI_OL_READ_ATM_ASCII
 !**************************************************************************
 SUBROUTINE OL_READ_ATM_ASCII (HSURF_FILETYPE, KFORC_STEP,                 &
                               PTA,PQA,PWIND,PDIR_SW,PSCA_SW,PLW,PSNOW,    &
-                              PRAIN,PPS,PCO2,PDIR)
+                              PRAIN,PPS,PDIR)
 !**************************************************************************
 !
 !!    PURPOSE
@@ -91,7 +91,7 @@ REAL, DIMENSION(:,:),INTENT(OUT) :: PLW
 REAL, DIMENSION(:,:),INTENT(OUT) :: PSNOW
 REAL, DIMENSION(:,:),INTENT(OUT) :: PRAIN
 REAL, DIMENSION(:,:),INTENT(OUT) :: PPS
-REAL, DIMENSION(:,:),INTENT(OUT) :: PCO2
+!REAL, DIMENSION(:,:),INTENT(OUT) :: PCO2
 REAL, DIMENSION(:,:),INTENT(OUT) :: PDIR
 !
 INTEGER,INTENT(IN)               :: KFORC_STEP
@@ -113,6 +113,6 @@ CALL READ_SURF_ATM('ASCII ','input/Forc_RAIN.txt  ',PRAIN  (1:2,:),KFORC_STEP,2,
 CALL READ_SURF_ATM('ASCII ','input/Forc_SNOW.txt  ',PSNOW  (1:2,:),KFORC_STEP,2,IRET,257)
 CALL READ_SURF_ATM('ASCII ','input/Forc_PS.txt    ',PPS    (1:2,:),KFORC_STEP,2,IRET,258)
 CALL READ_SURF_ATM('ASCII ','input/Forc_DIR.txt   ',PDIR   (1:2,:),KFORC_STEP,2,IRET,259)
-CALL READ_SURF_ATM('ASCII ','input/Forc_CO2.txt   ',PCO2   (1:2,:),KFORC_STEP,2,IRET,260)
+!CALL READ_SURF_ATM('ASCII ','input/Forc_CO2.txt   ',PCO2   (1:2,:),KFORC_STEP,2,IRET,260)
 
 END SUBROUTINE OL_READ_ATM_ASCII

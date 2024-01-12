@@ -12,13 +12,13 @@ INTERFACE
 !**************************************************************************
 SUBROUTINE OL_TIME_INTERP_ATM (KSURF_STEP,KNB_ATM,                               &
                                PTA,PQA,PWIND,PDIR_SW,PSCA_SW,PLW,PSNOW,PRAIN,PPS,&
-                               PCO2,PDIR             )
+                               PDIR             )
 !
 !**************************************************************************
 IMPLICIT NONE
 !
 ! global variables
-REAL, DIMENSION(:,:),INTENT(IN) :: PTA,PQA,PWIND,PDIR_SW,PSCA_SW,PLW,PSNOW,PRAIN,PPS,PCO2,PDIR
+REAL, DIMENSION(:,:),INTENT(IN) :: PTA,PQA,PWIND,PDIR_SW,PSCA_SW,PLW,PSNOW,PRAIN,PPS,PDIR
 INTEGER,INTENT(IN)   :: KSURF_STEP,KNB_ATM
 !
 END SUBROUTINE OL_TIME_INTERP_ATM
@@ -28,7 +28,7 @@ END MODULE MODI_OL_TIME_INTERP_ATM
 !**************************************************************************
 SUBROUTINE OL_TIME_INTERP_ATM (KSURF_STEP,KNB_ATM,                               &
                                PTA,PQA,PWIND,PDIR_SW,PSCA_SW,PLW,PSNOW,PRAIN,PPS,&
-                               PCO2,PDIR )
+                               PDIR )
 !**************************************************************************
 !
 !!    PURPOSE
@@ -76,7 +76,7 @@ USE MODD_FORC_ATM,  ONLY: XTA       ,&! air temperature forcing               (K
                           XPS       ,&! pressure at atmospheric model surface (Pa)
                           XPA       ,&! pressure at forcing level             (Pa)
                           XRHOA     ,&! density at forcing level              (kg/m3)
-                          XCO2      ,&! CO2 concentration in the air          (kg/kg)
+!                          XCO2      ,&! CO2 concentration in the air          (kg/kg)
                           XSNOW     ,&! snow precipitation                    (kg/m2/s)
                           XRAIN     ,&! liquid precipitation                  (kg/m2/s)
                           XZREF       ! height of T,q forcing                 (m)
@@ -86,7 +86,7 @@ IMPLICIT NONE
 !
 
 ! global variables
-REAL, DIMENSION(:,:),INTENT(IN) :: PTA,PQA,PWIND,PDIR_SW,PSCA_SW,PLW,PSNOW,PRAIN,PPS,PCO2,PDIR
+REAL, DIMENSION(:,:),INTENT(IN) :: PTA,PQA,PWIND,PDIR_SW,PSCA_SW,PLW,PSNOW,PRAIN,PPS,PDIR
 INTEGER,INTENT(IN)   :: KSURF_STEP,KNB_ATM
 
 ! local variables
@@ -119,7 +119,7 @@ ZDELTA_DIR_SW(:)=(PDIR_SW(2,:)-PDIR_SW(1,:))/(1.*KNB_ATM)
 ZDELTA_SCA_SW(:)=(PSCA_SW(2,:)-PSCA_SW(1,:))/(1.*KNB_ATM)
 ZDELTA_LW    (:)=(PLW    (2,:)-PLW    (1,:))/(1.*KNB_ATM)
 ZDELTA_PS    (:)=(PPS    (2,:)-PPS    (1,:))/(1.*KNB_ATM)
-ZDELTA_CO2   (:)=(PCO2   (2,:)-PCO2   (1,:))/(1.*KNB_ATM)
+!ZDELTA_CO2   (:)=(PCO2   (2,:)-PCO2   (1,:))/(1.*KNB_ATM)
 !
 XRAIN (:)= PRAIN(1,:)
 XSNOW (:)= PSNOW(1,:)
@@ -130,7 +130,7 @@ XU     (:)= ZU1      (:)+(KSURF_STEP*1.-1.)*ZDELTA_U     (:)
 XV     (:)= ZV1      (:)+(KSURF_STEP*1.-1.)*ZDELTA_V     (:)
 XLW    (:)= PLW    (1,:)+(KSURF_STEP*1.-1.)*ZDELTA_LW    (:)
 XPS    (:)= PPS    (1,:)+(KSURF_STEP*1.-1.)*ZDELTA_PS    (:)
-XCO2   (:)= PCO2   (1,:)+(KSURF_STEP*1.-1.)*ZDELTA_CO2   (:)
+!XCO2   (:)= PCO2   (1,:)+(KSURF_STEP*1.-1.)*ZDELTA_CO2   (:)
 !
 ! Only 1 band
 XDIR_SW(:,1)= PDIR_SW(1,:)+(KSURF_STEP*1.-1.)*ZDELTA_DIR_SW(:)

@@ -508,7 +508,7 @@ REAL, DIMENSION(:,:), ALLOCATABLE :: ZLW    ! longwave radiation (on horizontal 
 REAL, DIMENSION(:,:), ALLOCATABLE :: ZSNOW  ! snow precipitation  (kg/m2/s)           ! ||   ||
 REAL, DIMENSION(:,:), ALLOCATABLE :: ZRAIN  ! liquid precipitation  (kg/m2/s)         !\\     //
 REAL, DIMENSION(:,:), ALLOCATABLE :: ZPS    ! pressure at forcing level  (Pa)         ! \\   //
-REAL, DIMENSION(:,:), ALLOCATABLE :: ZCO2   ! CO2 concentration in the air  (kg/m3)   !  \\ // 
+!REAL, DIMENSION(:,:), ALLOCATABLE :: ZCO2   ! CO2 concentration in the air  (kg/m3)   !  \\ // 
 REAL, DIMENSION(:,:), ALLOCATABLE :: ZDIR   ! wind direction                          !   \\/  
 REAL, DIMENSION(1)  :: ZCOEF                ! work array                              !
 REAL, DIMENSION(1)  :: ZF1_o_B              ! Coefficient for sky model               ! ||   ||
@@ -591,13 +591,14 @@ HZ0H = 'KAND07'
 ! Urban geometry
 !============================================================
 !============================================================
-!ZZ0         = 2.     ! Roughness length (m)
-ZBLD        = 0.62   ! Horizontal building area density
-ZGARDEN     = 0.11   ! fraction of GARDEN areas
-!ZBLD_HEIGHT = 20.    ! Canyon height (m)
-ZWALL_O_HOR = 1.05   ! Vertical to horizonal surf ratio
+!ZZ0          = 2.     ! Roughness length (m)
+ZBLD          = 0.62   ! Horizontal building area density
+ZGARDEN       = 0.11   ! fraction of GARDEN areas
+!ZBLD_HEIGHT  = 20.    ! Canyon height (m)
+ZCAN_HW_RATIO = 1.38   ! Canyon H/W
+!ZWALL_O_HOR  = 1.05   ! Vertical to horizonal surf ratio
 !* Road direction
-ZROAD_DIR    = 0.   ! N-S road  (° from North, clockwise)
+ZROAD_DIR     = 0.   ! N-S road  (° from North, clockwise)
 !
 !============================================================
 !============================================================
@@ -843,7 +844,7 @@ ZQI_BLD        = 0.0068794074 ! Indoor air specific humidity [kg kg-1]
 ! READ NAMELIST PARAMETERS
 !===========================================================================
 !===========================================================================
-NAMELIST /tebparam/ ZBLD_HEIGHT, ZBLD, ZWALL_O_HOR, ZROAD_DIR, ZGARDEN, LGARDEN,       &
+NAMELIST /tebparam/ ZBLD_HEIGHT, ZBLD, ZCAN_HW_RATIO, ZROAD_DIR, ZGARDEN, LGARDEN,     &
                     CBEM, HROAD_DIR, HWALL_OPT, LGREENROOF, ZFRAC_GR, LSOLAR_PANEL,    &
 					ZFRAC_PANEL, LPAR_RD_IRRIG, HNATVENT, CCOOL_COIL, CHEAT_COIL,      &
 					HZ0H, ZALB_ROOF, ZALB_ROAD, ZALB_WALL, ZEMIS_ROOF, ZEMIS_ROAD,     &
@@ -962,15 +963,16 @@ ALLOCATE(ZLW    (2,1))
 ALLOCATE(ZSNOW  (2,1))
 ALLOCATE(ZRAIN  (2,1))
 ALLOCATE(ZPS    (2,1))
-ALLOCATE(ZCO2   (2,1))
+!ALLOCATE(ZCO2   (2,1))
 ALLOCATE(ZDIR   (2,1))
 !
 !* reads atmospheric forcing for first time-step
 !
 CALL OL_READ_ATM('ASCII ', 'ASCII ', 1,    &
                     ZTA,ZQA,ZWIND,ZDIR_SW,ZSCA_SW,ZLW,ZSNOW,ZRAIN,ZPS,&
-                    ZCO2,ZDIR )
-XCO2(:)  = ZCO2(1,:)
+                    ZDIR )
+!XCO2(:)  = ZCO2(1,:)
+XCO2(:)  = 0.
 !XRHOA(:) = ZPS(1,:) / ( ZTA(1,:)*XRD * ( 1.+((XRV/XRD)-1.)*ZQA(1,:) ) + XZREF(:)*XG )
 XRHOA(:) = ZPS(1,:) / ( ZTA(1,:)*XRD * ( 1.+((XRV/XRD)-1.)*ZQA(1,:) ) + ZZREF(:)*XG )
 
@@ -1028,7 +1030,8 @@ ZZ0           = 0.1 * ZBLD_HEIGHT  ! Roughness length (m)
 ZROAD         = (1. - ZBLD - ZGARDEN)
 XZREF         = ZZREF
 XUREF         = ZZREF
-ZCAN_HW_RATIO = 0.5 * ZWALL_O_HOR / (1.-ZBLD)
+ZWALL_O_HOR   = 2. * ZCAN_HW_RATIO * (1. - ZBLD) ! Vertical to horizonal surf ratio
+!ZCAN_HW_RATIO = 0.5 * ZWALL_O_HOR / (1.-ZBLD)
 ZSVF_ROAD     = (SQRT(ZCAN_HW_RATIO**2+1.) - ZCAN_HW_RATIO)
 ZSVF_GARDEN   = ZSVF_ROAD
 ZSVF_WALL     =  0.5*(ZCAN_HW_RATIO+1.-SQRT(ZCAN_HW_RATIO**2+1.))/ZCAN_HW_RATIO
@@ -1106,7 +1109,7 @@ DO JFORC_STEP= 1,INB_STEP_ATM
    ! read Forcing
    CALL OL_READ_ATM('ASCII ', 'ASCII ', JFORC_STEP,    &
                     ZTA,ZQA,ZWIND,ZDIR_SW,ZSCA_SW,ZLW,ZSNOW,ZRAIN,ZPS,&
-                    ZCO2,ZDIR )
+                    ZDIR )
    !  
    !
    DO JSURF_STEP=1,INB_ATM
@@ -1134,7 +1137,7 @@ DO JFORC_STEP= 1,INB_STEP_ATM
        !
        CALL OL_TIME_INTERP_ATM(JSURF_STEP,INB_ATM,                               &
                                ZTA,ZQA,ZWIND,ZDIR_SW,ZSCA_SW,ZLW,ZSNOW,ZRAIN,ZPS,&
-                               ZCO2,ZDIR  ) 
+                               ZDIR  ) 
        ! Exner functions
        !
        ZEXNS = (XPS/XP00)**(XRD/XCPD)
@@ -1348,7 +1351,7 @@ DEALLOCATE(ZLW)
 DEALLOCATE(ZSNOW)
 DEALLOCATE(ZRAIN)
 DEALLOCATE(ZPS)
-DEALLOCATE(ZCO2)
+!DEALLOCATE(ZCO2)
 DEALLOCATE(ZDIR)
 !
 DEALLOCATE(ZHC_WALL) 
