@@ -1,12 +1,12 @@
 &tebforcing
-forcing_path2='input_Moscow/',
+forcing_path='input_Moscow/',
 IYEAR=2022,   
 IMONTH=1,     
 IDAY=1,     
 ZTIME_START=0.,     
-ZLON=37.5,    
-ZLAT=55.5, 
-INB_STEP_ATM=8759,  
-INB_ATM=12,      
+ZLON=37.5,
+ZLAT=55.5,    
+NUM_TIMESTEPS=8760,  
+TIMESTEP=3600.,      
 ZZREF=10.    
 / 

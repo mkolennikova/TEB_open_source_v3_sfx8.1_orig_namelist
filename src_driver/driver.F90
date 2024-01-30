@@ -113,8 +113,9 @@ INTEGER            :: IDAY        = 20     ! Current day (UTC)
 REAL               :: ZTIME_START = 0.     ! Time at start of the run (s)
 REAL,DIMENSION(1)  :: ZLON        = 1.3    ! Longitude (deg)
 REAL,DIMENSION(1)  :: ZLAT        = 43.484 ! Latitude (deg)
-INTEGER           :: INB_STEP_ATM = 17999  ! Forcing time-steps
-INTEGER            :: INB_ATM     = 6      ! number time the driver calls the TEB
+INTEGER            :: NUM_TIMESTEPS = 18000! Forcing time-steps
+REAL               :: TIMESTEP    = 1800.  ! Forcing time-step (s)
+INTEGER            :: INB_ATM              ! number time the driver calls the TEB
 !                                          ! routines during a forcing time-step
 !                                          ! --> it defines the time-step for TEB
 INTEGER            :: KSW         = 1      ! number of spectral bands in SW forcing
@@ -537,8 +538,8 @@ CHARACTER(LEN=*), PARAMETER       :: HVAC_HEAT = 'output/HVAC_HEAT.txt'         
 INTEGER                           :: fu, rc
 CHARACTER(LEN=*), PARAMETER       :: namelist_path = 'src_driver/namelist.nml'
 CHARACTER(LEN=*), PARAMETER       :: namelist_forcing_path = 'src_driver/namelist_forcing.nml'
-CHARACTER(LEN=100)                :: forcing_path2  ! Forcing filepath that we read from namelist
-CHARACTER(:), allocatable         :: forcing_path   ! Forcing filepath with adjusted length
+CHARACTER(LEN=100)                :: forcing_path   ! Forcing filepath that we read from namelist
+CHARACTER(:), allocatable         :: forcing_path2  ! Forcing filepath with adjusted length
 !                                                                                     ! ||   ||
 !                                                                                     ! ||   ||
 !============================================================                         ! ||   ||
@@ -602,7 +603,7 @@ ZCAN_HW_RATIO = 1.38   ! Canyon H/W
 !ZWALL_O_HOR  = 1.05   ! Vertical to horizonal surf ratio
 !* Road direction
 ZROAD_DIR     = 0.     ! N-S road  (° from North, clockwise)
-forcing_path2 = 'input/'
+forcing_path  = 'input/'
 !
 !============================================================
 !============================================================
@@ -849,12 +850,12 @@ ZQI_BLD        = 0.0068794074 ! Indoor air specific humidity [kg kg-1]
 ! READ NAMELIST FORCING PARAMETERS
 !===========================================================================
 !===========================================================================
-NAMELIST /tebforcing/ forcing_path2, IYEAR, IMONTH, IDAY, ZTIME_START, ZLON, &
-                      ZLAT, INB_STEP_ATM, INB_ATM, ZZREF
+NAMELIST /tebforcing/ forcing_path, IYEAR, IMONTH, IDAY, ZTIME_START, ZLON, &
+                      ZLAT, NUM_TIMESTEPS, TIMESTEP, ZZREF
 ! Read from file.
 open (action='read', file=namelist_forcing_path, iostat=rc, newunit=fu)
 read (nml=tebforcing, iostat=rc, unit=fu)
-forcing_path=trim(forcing_path2)
+forcing_path2=trim(forcing_path)
 
 !===========================================================================
 !===========================================================================
@@ -957,7 +958,7 @@ XRIMAX = 0.2 ! Maximum richardson number for exchange coefficients computations
 !
 !* Open atmospheric forcing files
 !
-CALL OPEN_CLOSE_BIN_ASC_FORC('OPEN ','ASCII ',1,'R', forcing_path)
+CALL OPEN_CLOSE_BIN_ASC_FORC('OPEN ','ASCII ',1,'R', forcing_path2)
 !
 ! allocation of variables
 !
@@ -984,7 +985,7 @@ ALLOCATE(ZDIR   (2,1))
 !
 !* reads atmospheric forcing for first time-step
 !
-CALL OL_READ_ATM('ASCII ', 'ASCII ', 1, forcing_path,    &
+CALL OL_READ_ATM('ASCII ', 'ASCII ', 1, forcing_path2,    &
                     ZTA,ZQA,ZWIND,ZDIR_SW,ZSCA_SW,ZLW,ZSNOW,ZRAIN,ZPS,&
                     ZDIR )
 !XCO2(:)  = ZCO2(1,:)
@@ -1115,15 +1116,17 @@ OPEN(UNIT=26, FILE = HVAC_HEAT, ACCESS = 'APPEND',STATUS = 'REPLACE')
 ! Temporal loops
 ! -----------------------------------------------------------
 !
-DO JFORC_STEP= 1,INB_STEP_ATM
-   WRITE(*,FMT='(I5,A1,I5)') JFORC_STEP,'/',INB_STEP_ATM
+INB_ATM = TIMESTEP / XTSTEP_SURF
+
+DO JFORC_STEP= 1,NUM_TIMESTEPS - 1
+   WRITE(*,FMT='(I5,A1,I5)') JFORC_STEP,'/',NUM_TIMESTEPS - 1
    !
    ZTS_ROOF   = 0.
    ZTS_ROAD   = 0.
    ZTS_WALL_A = 0.
    ZTS_WALL_B = 0.
    ! read Forcing
-   CALL OL_READ_ATM('ASCII ', 'ASCII ', JFORC_STEP, forcing_path,    &
+   CALL OL_READ_ATM('ASCII ', 'ASCII ', JFORC_STEP, forcing_path2,    &
                     ZTA,ZQA,ZWIND,ZDIR_SW,ZSCA_SW,ZLW,ZSNOW,ZRAIN,ZPS,&
                     ZDIR )
    !  
@@ -1384,7 +1387,7 @@ DEALLOCATE(ZTC_ROAD)
 DEALLOCATE(ZD_ROAD) 
 DEALLOCATE(ZT_ROAD) 
 !
-CALL OPEN_CLOSE_BIN_ASC_FORC('CLOSE ','ASCII ',1,'R', forcing_path)
+CALL OPEN_CLOSE_BIN_ASC_FORC('CLOSE ','ASCII ',1,'R', forcing_path2)
 CLOSE(13)
 CLOSE(14)
 CLOSE(15)
