@@ -10,7 +10,7 @@ MODULE MODI_OL_READ_ATM_ASCII
 INTERFACE
 
 !**************************************************************************
-SUBROUTINE OL_READ_ATM_ASCII (HSURF_FILETYPE, KFORC_STEP,                 &
+SUBROUTINE OL_READ_ATM_ASCII (HSURF_FILETYPE, KFORC_STEP, path,           &
                               PTA,PQA,PWIND,PDIR_SW,PSCA_SW,PLW,PSNOW,    &
                               PRAIN,PPS,PDIR)
 !
@@ -20,6 +20,7 @@ IMPLICIT NONE
 ! global variables
 INTEGER,             INTENT(IN)  :: KFORC_STEP
 CHARACTER(LEN=6)    ,INTENT(IN)  :: HSURF_FILETYPE
+CHARACTER(LEN=*)    ,INTENT(IN)  :: path
 REAL, DIMENSION(:,:),INTENT(OUT) :: PTA
 REAL, DIMENSION(:,:),INTENT(OUT) :: PQA
 REAL, DIMENSION(:,:),INTENT(OUT) :: PWIND
@@ -37,7 +38,7 @@ END INTERFACE
 END MODULE MODI_OL_READ_ATM_ASCII
 !
 !**************************************************************************
-SUBROUTINE OL_READ_ATM_ASCII (HSURF_FILETYPE, KFORC_STEP,                 &
+SUBROUTINE OL_READ_ATM_ASCII (HSURF_FILETYPE, KFORC_STEP, path,           &
                               PTA,PQA,PWIND,PDIR_SW,PSCA_SW,PLW,PSNOW,    &
                               PRAIN,PPS,PDIR)
 !**************************************************************************
@@ -96,6 +97,7 @@ REAL, DIMENSION(:,:),INTENT(OUT) :: PDIR
 !
 INTEGER,INTENT(IN)               :: KFORC_STEP
 CHARACTER(LEN=6)    ,INTENT(IN)  :: HSURF_FILETYPE
+CHARACTER(LEN=*)    ,INTENT(IN)  :: path
 
 ! local variables
 INTEGER                          :: IRET
@@ -103,16 +105,16 @@ INTEGER                          :: IRET
 
    
 ! read data
-CALL READ_SURF_ATM('ASCII ','input/Forc_TA.txt    ',PTA    (1:2,:),KFORC_STEP,2,IRET,250)
-CALL READ_SURF_ATM('ASCII ','input/Forc_QA.txt    ',PQA    (1:2,:),KFORC_STEP,2,IRET,251)
-CALL READ_SURF_ATM('ASCII ','input/Forc_WIND.txt  ',PWIND  (1:2,:),KFORC_STEP,2,IRET,252)
-CALL READ_SURF_ATM('ASCII ','input/Forc_LW.txt    ',PLW    (1:2,:),KFORC_STEP,2,IRET,253)
-CALL READ_SURF_ATM('ASCII ','input/Forc_DIR_SW.txt',PDIR_SW(1:2,:),KFORC_STEP,2,IRET,254)
-CALL READ_SURF_ATM('ASCII ','input/Forc_SCA_SW.txt',PSCA_SW(1:2,:),KFORC_STEP,2,IRET,255)
-CALL READ_SURF_ATM('ASCII ','input/Forc_RAIN.txt  ',PRAIN  (1:2,:),KFORC_STEP,2,IRET,256)
-CALL READ_SURF_ATM('ASCII ','input/Forc_SNOW.txt  ',PSNOW  (1:2,:),KFORC_STEP,2,IRET,257)
-CALL READ_SURF_ATM('ASCII ','input/Forc_PS.txt    ',PPS    (1:2,:),KFORC_STEP,2,IRET,258)
-CALL READ_SURF_ATM('ASCII ','input/Forc_DIR.txt   ',PDIR   (1:2,:),KFORC_STEP,2,IRET,259)
+CALL READ_SURF_ATM('ASCII ',path//"Forc_TA.txt    ",PTA    (1:2,:),KFORC_STEP,2,IRET,250)
+CALL READ_SURF_ATM('ASCII ',path//"Forc_TA.txt    ",PQA    (1:2,:),KFORC_STEP,2,IRET,251)
+CALL READ_SURF_ATM('ASCII ',path//"Forc_TA.txt    ",PWIND  (1:2,:),KFORC_STEP,2,IRET,252)
+CALL READ_SURF_ATM('ASCII ',path//"Forc_TA.txt    ",PLW    (1:2,:),KFORC_STEP,2,IRET,253)
+CALL READ_SURF_ATM('ASCII ',path//"Forc_TA.txt    ",PDIR_SW(1:2,:),KFORC_STEP,2,IRET,254)
+CALL READ_SURF_ATM('ASCII ',path//"Forc_TA.txt    ",PSCA_SW(1:2,:),KFORC_STEP,2,IRET,255)
+CALL READ_SURF_ATM('ASCII ',path//"Forc_TA.txt    ",PRAIN  (1:2,:),KFORC_STEP,2,IRET,256)
+CALL READ_SURF_ATM('ASCII ',path//"Forc_TA.txt    ",PSNOW  (1:2,:),KFORC_STEP,2,IRET,257)
+CALL READ_SURF_ATM('ASCII ',path//"Forc_TA.txt    ",PPS    (1:2,:),KFORC_STEP,2,IRET,258)
+CALL READ_SURF_ATM('ASCII ',path//"Forc_TA.txt    ",PDIR   (1:2,:),KFORC_STEP,2,IRET,259)
 !CALL READ_SURF_ATM('ASCII ','input/Forc_CO2.txt   ',PCO2   (1:2,:),KFORC_STEP,2,IRET,260)
 
 END SUBROUTINE OL_READ_ATM_ASCII

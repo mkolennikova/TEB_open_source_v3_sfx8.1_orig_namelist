@@ -7,7 +7,7 @@
 ! The CeCILL-C licence is compatible with L-GPL
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !     ################################################################
-      SUBROUTINE OPEN_CLOSE_BIN_ASC_FORC(HACTION,HFORCING,KNI,HACTION2)
+      SUBROUTINE OPEN_CLOSE_BIN_ASC_FORC(HACTION,HFORCING,KNI,HACTION2,path)
 !     ################################################################
 !
 !!****  *OPEN_CLOSE_BIN_ASC_FORC* - routine to open and close atmospheric forcing files
@@ -52,6 +52,7 @@ CHARACTER(LEN=6),  INTENT(IN)  :: HFORCING ! forcing file type
 INTEGER,           INTENT(IN)  :: KNI      ! number of points
 CHARACTER(LEN=1),  INTENT(IN)  :: HACTION2 ! 'R': read, 'W': write
 CHARACTER(LEN=7)               :: YSTATUS  ! file status (OLD/NEW)
+CHARACTER(LEN=*),  INTENT(IN)  :: path
 
 !
 !*       0.2   Declarations of local variables
@@ -74,17 +75,17 @@ END IF
 !
 IF (HACTION=='OPEN ') THEN
   IF (HFORCING=='ASCII ') THEN
-    OPEN(UNIT=250,FILE='input/Forc_TA.txt      ',FORM='FORMATTED',STATUS=YSTATUS)
-    OPEN(UNIT=251,FILE='input/Forc_QA.txt      ',FORM='FORMATTED',STATUS=YSTATUS)
-    OPEN(UNIT=252,FILE='input/Forc_WIND.txt    ',FORM='FORMATTED',STATUS=YSTATUS)
-    OPEN(UNIT=253,FILE='input/Forc_LW.txt      ',FORM='FORMATTED',STATUS=YSTATUS)
-    OPEN(UNIT=254,FILE='input/Forc_DIR_SW.txt  ',FORM='FORMATTED',STATUS=YSTATUS)
-    OPEN(UNIT=255,FILE='input/Forc_SCA_SW.txt  ',FORM='FORMATTED',STATUS=YSTATUS)
-    OPEN(UNIT=256,FILE='input/Forc_RAIN.txt    ',FORM='FORMATTED',STATUS=YSTATUS)
-    OPEN(UNIT=257,FILE='input/Forc_SNOW.txt    ',FORM='FORMATTED',STATUS=YSTATUS)
-    OPEN(UNIT=258,FILE='input/Forc_PS.txt      ',FORM='FORMATTED',STATUS=YSTATUS)
-    OPEN(UNIT=259,FILE='input/Forc_DIR.txt     ',FORM='FORMATTED',STATUS=YSTATUS)
-    OPEN(UNIT=260,FILE='input/Forc_CO2.txt     ',FORM='FORMATTED',STATUS=YSTATUS)
+    OPEN(UNIT=250,FILE=path//"Forc_TA.txt      ",FORM='FORMATTED',STATUS=YSTATUS)
+    OPEN(UNIT=251,FILE=path//"Forc_QA.txt      ",FORM='FORMATTED',STATUS=YSTATUS)
+    OPEN(UNIT=252,FILE=path//"Forc_WIND.txt    ",FORM='FORMATTED',STATUS=YSTATUS)
+    OPEN(UNIT=253,FILE=path//"Forc_LW.txt      ",FORM='FORMATTED',STATUS=YSTATUS)
+    OPEN(UNIT=254,FILE=path//"Forc_DIR_SW.txt  ",FORM='FORMATTED',STATUS=YSTATUS)
+    OPEN(UNIT=255,FILE=path//"Forc_SCA_SW.txt  ",FORM='FORMATTED',STATUS=YSTATUS)
+    OPEN(UNIT=256,FILE=path//"Forc_RAIN.txt    ",FORM='FORMATTED',STATUS=YSTATUS)
+    OPEN(UNIT=257,FILE=path//"Forc_SNOW.txt    ",FORM='FORMATTED',STATUS=YSTATUS)
+    OPEN(UNIT=258,FILE=path//"Forc_PS.txt      ",FORM='FORMATTED',STATUS=YSTATUS)
+    OPEN(UNIT=259,FILE=path//"Forc_DIR.txt     ",FORM='FORMATTED',STATUS=YSTATUS)
+!    OPEN(UNIT=260,FILE=path//"Forc_CO2.txt     ",FORM='FORMATTED',STATUS=YSTATUS)
 !
   ELSE IF (HFORCING=='BINARY') THEN
     OPEN(UNIT=250,FILE='input/Forc_TA.bin      ',FORM='UNFORMATTED',STATUS=YSTATUS,ACCESS='DIRECT',RECL=KNI*4)

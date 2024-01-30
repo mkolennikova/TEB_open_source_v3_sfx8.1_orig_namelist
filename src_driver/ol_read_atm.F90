@@ -10,8 +10,8 @@ MODULE MODI_OL_READ_ATM
 INTERFACE
 
 !**************************************************************************
-SUBROUTINE OL_READ_ATM (HSURF_FILETYPE, HFORCING_FILETYPE, KFORC_STEP,    &
-                        PTA,PQA,PWIND,PDIR_SW,PSCA_SW,PLW,PSNOW,PRAIN,PPS,&
+SUBROUTINE OL_READ_ATM (HSURF_FILETYPE, HFORCING_FILETYPE, KFORC_STEP, path, &
+                        PTA,PQA,PWIND,PDIR_SW,PSCA_SW,PLW,PSNOW,PRAIN,PPS,   &
                         PDIR   )
 !
 !**************************************************************************
@@ -21,6 +21,7 @@ IMPLICIT NONE
 INTEGER,             INTENT(IN)  :: KFORC_STEP
 CHARACTER(LEN=6)    ,INTENT(IN)  :: HSURF_FILETYPE
 CHARACTER(LEN=6)    ,INTENT(IN)  :: HFORCING_FILETYPE
+CHARACTER(LEN=*)    ,INTENT(IN)  :: path
 REAL, DIMENSION(:,:),INTENT(INOUT) :: PTA
 REAL, DIMENSION(:,:),INTENT(INOUT) :: PQA
 REAL, DIMENSION(:,:),INTENT(INOUT) :: PWIND
@@ -38,8 +39,8 @@ END INTERFACE
 END MODULE MODI_OL_READ_ATM
 !
 !**************************************************************************
-SUBROUTINE OL_READ_ATM (HSURF_FILETYPE, HFORCING_FILETYPE, KFORC_STEP,    &
-                        PTA,PQA,PWIND,PDIR_SW,PSCA_SW,PLW,PSNOW,PRAIN,PPS,&
+SUBROUTINE OL_READ_ATM (HSURF_FILETYPE, HFORCING_FILETYPE, KFORC_STEP, path, &
+                        PTA,PQA,PWIND,PDIR_SW,PSCA_SW,PLW,PSNOW,PRAIN,PPS,   &
                         PDIR   )
 !**************************************************************************
 !
@@ -102,6 +103,7 @@ REAL, DIMENSION(:,:),INTENT(INOUT) :: PDIR
 INTEGER,INTENT(IN)               :: KFORC_STEP
 CHARACTER(LEN=6)    ,INTENT(IN)  :: HSURF_FILETYPE
 CHARACTER(LEN=6)    ,INTENT(IN)  :: HFORCING_FILETYPE
+CHARACTER(LEN=*)    ,INTENT(IN)  :: path
 !
 !
 !set time variables
@@ -109,7 +111,7 @@ CHARACTER(LEN=6)    ,INTENT(IN)  :: HFORCING_FILETYPE
 ! read data
 !
 IF (HFORCING_FILETYPE == 'ASCII ') THEN
-  CALL OL_READ_ATM_ASCII  (HSURF_FILETYPE, KFORC_STEP,                       &
+  CALL OL_READ_ATM_ASCII  (HSURF_FILETYPE, KFORC_STEP, path,                 &
                            PTA,PQA,PWIND,PDIR_SW,PSCA_SW,PLW,PSNOW,PRAIN,PPS,&
                            PDIR              )
 ENDIF

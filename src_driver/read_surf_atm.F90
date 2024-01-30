@@ -74,7 +74,8 @@ INTEGER,INTENT(IN)               :: KNB
 INTEGER,INTENT(IN)               :: KRESP
 INTEGER,INTENT(IN)               :: KINIT
 CHARACTER(LEN=6)    ,INTENT(IN)  :: HPROGRAM
-CHARACTER(LEN=15)   ,INTENT(IN)  :: HFILE
+!CHARACTER(LEN=15)   ,INTENT(IN)  :: HFILE
+CHARACTER(LEN=*)   ,INTENT(IN)  :: HFILE
 
 ! local variables
 INTEGER                          :: I

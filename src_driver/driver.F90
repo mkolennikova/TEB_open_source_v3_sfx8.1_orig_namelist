@@ -535,7 +535,10 @@ CHARACTER(LEN=*), PARAMETER       :: RN_TOWN = 'output/RN_TOWN.txt'             
 CHARACTER(LEN=*), PARAMETER       :: HVAC_COOL = 'output/HVAC_COOL.txt'               !   \\/ 
 CHARACTER(LEN=*), PARAMETER       :: HVAC_HEAT = 'output/HVAC_HEAT.txt'               !
 INTEGER                           :: fu, rc
-CHARACTER(LEN=*), PARAMETER       :: file_path = 'src_driver/namelist.nml'
+CHARACTER(LEN=*), PARAMETER       :: namelist_path = 'src_driver/namelist.nml'
+CHARACTER(LEN=*), PARAMETER       :: namelist_forcing_path = 'src_driver/namelist_forcing.nml'
+CHARACTER(LEN=100)                :: forcing_path2  ! Forcing filepath that we read from namelist
+CHARACTER(:), allocatable         :: forcing_path   ! Forcing filepath with adjusted length
 !                                                                                     ! ||   ||
 !                                                                                     ! ||   ||
 !============================================================                         ! ||   ||
@@ -594,11 +597,12 @@ HZ0H = 'KAND07'
 !ZZ0          = 2.     ! Roughness length (m)
 ZBLD          = 0.62   ! Horizontal building area density
 ZGARDEN       = 0.11   ! fraction of GARDEN areas
-!ZBLD_HEIGHT  = 20.    ! Canyon height (m)
+ZBLD_HEIGHT   = 20.    ! Canyon height (m)
 ZCAN_HW_RATIO = 1.38   ! Canyon H/W
 !ZWALL_O_HOR  = 1.05   ! Vertical to horizonal surf ratio
 !* Road direction
-ZROAD_DIR     = 0.   ! N-S road  (° from North, clockwise)
+ZROAD_DIR     = 0.     ! N-S road  (° from North, clockwise)
+forcing_path2 = 'input/'
 !
 !============================================================
 !============================================================
@@ -839,6 +843,19 @@ ZQI_BLD        = 0.0068794074 ! Indoor air specific humidity [kg kg-1]
 !===========================================================================
 ! END OF PARAMETERS SETUP
 
+
+!===========================================================================
+!===========================================================================
+! READ NAMELIST FORCING PARAMETERS
+!===========================================================================
+!===========================================================================
+NAMELIST /tebforcing/ forcing_path2, IYEAR, IMONTH, IDAY, ZTIME_START, ZLON, &
+                      ZLAT, INB_STEP_ATM, INB_ATM, ZZREF
+! Read from file.
+open (action='read', file=namelist_forcing_path, iostat=rc, newunit=fu)
+read (nml=tebforcing, iostat=rc, unit=fu)
+forcing_path=trim(forcing_path2)
+
 !===========================================================================
 !===========================================================================
 ! READ NAMELIST PARAMETERS
@@ -858,9 +875,8 @@ NAMELIST /tebparam/ ZBLD_HEIGHT, ZBLD, ZCAN_HW_RATIO, ZROAD_DIR, ZGARDEN, LGARDE
 					ZM_SYS_RAT, ZCOP_RAT, CCH_BEM, ZROUGH_ROOF, ZROUGH_WALL, ZHC_ROOF, &
 					ZTC_ROOF, ZD_ROOF, ZHC_ROAD, ZTC_ROAD, ZD_ROAD, ZHC_WALL, ZTC_WALL,&
 					ZD_WALL, ZHC_FLOOR, ZTC_FLOOR, ZD_FLOOR, ZTI_BLD, ZQI_BLD
-
 ! Read from file.
-open (action='read', file=file_path, iostat=rc, newunit=fu)
+open (action='read', file=namelist_path, iostat=rc, newunit=fu)
 read (nml=tebparam, iostat=rc, unit=fu)
 
 !===========================================================================
@@ -941,7 +957,7 @@ XRIMAX = 0.2 ! Maximum richardson number for exchange coefficients computations
 !
 !* Open atmospheric forcing files
 !
-CALL OPEN_CLOSE_BIN_ASC_FORC('OPEN ','ASCII ',1,'R')
+CALL OPEN_CLOSE_BIN_ASC_FORC('OPEN ','ASCII ',1,'R', forcing_path)
 !
 ! allocation of variables
 !
@@ -968,7 +984,7 @@ ALLOCATE(ZDIR   (2,1))
 !
 !* reads atmospheric forcing for first time-step
 !
-CALL OL_READ_ATM('ASCII ', 'ASCII ', 1,    &
+CALL OL_READ_ATM('ASCII ', 'ASCII ', 1, forcing_path,    &
                     ZTA,ZQA,ZWIND,ZDIR_SW,ZSCA_SW,ZLW,ZSNOW,ZRAIN,ZPS,&
                     ZDIR )
 !XCO2(:)  = ZCO2(1,:)
@@ -1107,7 +1123,7 @@ DO JFORC_STEP= 1,INB_STEP_ATM
    ZTS_WALL_A = 0.
    ZTS_WALL_B = 0.
    ! read Forcing
-   CALL OL_READ_ATM('ASCII ', 'ASCII ', JFORC_STEP,    &
+   CALL OL_READ_ATM('ASCII ', 'ASCII ', JFORC_STEP, forcing_path,    &
                     ZTA,ZQA,ZWIND,ZDIR_SW,ZSCA_SW,ZLW,ZSNOW,ZRAIN,ZPS,&
                     ZDIR )
    !  
@@ -1368,7 +1384,7 @@ DEALLOCATE(ZTC_ROAD)
 DEALLOCATE(ZD_ROAD) 
 DEALLOCATE(ZT_ROAD) 
 !
-CALL OPEN_CLOSE_BIN_ASC_FORC('CLOSE ','ASCII ',1,'R')
+CALL OPEN_CLOSE_BIN_ASC_FORC('CLOSE ','ASCII ',1,'R', forcing_path)
 CLOSE(13)
 CLOSE(14)
 CLOSE(15)
