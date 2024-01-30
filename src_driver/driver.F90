@@ -856,7 +856,8 @@ NAMELIST /tebforcing/ forcing_path, IYEAR, IMONTH, IDAY, ZTIME_START, ZLON, &
 open (action='read', file=namelist_forcing_path, iostat=rc, newunit=fu)
 read (nml=tebforcing, iostat=rc, unit=fu)
 forcing_path2=trim(forcing_path)
-
+print*, forcing_path, 'forcing_path'
+print*, forcing_path2, 'forcing_path2'
 !===========================================================================
 !===========================================================================
 ! READ NAMELIST PARAMETERS
@@ -1117,7 +1118,12 @@ OPEN(UNIT=26, FILE = HVAC_HEAT, ACCESS = 'APPEND',STATUS = 'REPLACE')
 ! -----------------------------------------------------------
 !
 INB_ATM = TIMESTEP / XTSTEP_SURF
+print*, 'TIMESTEP = ', TIMESTEP
+print*, 'INB_ATM = ', INB_ATM
+print*, 'NUM_TIMESTEPS = ', NUM_TIMESTEPS
 
+!                                          ! routines during a forcing time-step
+!                                          ! --> it defines the time-step for TEB
 DO JFORC_STEP= 1,NUM_TIMESTEPS - 1
    WRITE(*,FMT='(I5,A1,I5)') JFORC_STEP,'/',NUM_TIMESTEPS - 1
    !
