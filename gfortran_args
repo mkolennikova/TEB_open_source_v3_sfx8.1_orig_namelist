@@ -1,12 +1,21 @@
 ######################################################################
 CC = gcc
-#FC = gfortran
-FC = ifort
-LD = ifort
-CPPFLAGS = #-P -traditional -Wcomment
-FFLAGS = #-funderscoring -O0 -g -Wall -c -fmessage-length=0 -fdefault-real-8 -ffpe-trap=invalid,zero
-#FFLAGS = -g -O2
+FC = gfortran
+LD = gfortran
+CPPFLAGS = -P -traditional
+#FFLAGS = -funderscoring -O0 -g -Wall -c -fmessage-length=0 -fdefault-real-8 -ffpe-trap=invalid,zero
+FFLAGS = -g -O2
 # add your libraries after LIBS= , e.g. -lblas
 LIBS =
 LDFLAGS = $(LIBS)
+######################################################################
+
+
+
+######################################################################
+#FC = ifort
+#LD = ifort
+# add your libraries after LIBS= , e.g. -lblas
+#LIBS =
+#LDFLAGS = $(LIBS)
 ######################################################################

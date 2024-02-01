@@ -540,6 +540,24 @@ CHARACTER(LEN=*), PARAMETER       :: namelist_path = 'src_driver/namelist.nml'
 CHARACTER(LEN=*), PARAMETER       :: namelist_forcing_path = 'src_driver/namelist_forcing.nml'
 CHARACTER(LEN=100)                :: forcing_path   ! Forcing filepath that we read from namelist
 CHARACTER(:), allocatable         :: forcing_path2  ! Forcing filepath with adjusted length
+! NAMELIST FORCING PARAMETERS
+NAMELIST /tebforcing/ forcing_path, IYEAR, IMONTH, IDAY, ZTIME_START, ZLON, &
+                      ZLAT, NUM_TIMESTEPS, TIMESTEP, ZZREF
+! NAMELIST PARAMETERS
+NAMELIST /tebparam/ ZBLD_HEIGHT, ZBLD, ZCAN_HW_RATIO, ZROAD_DIR, ZGARDEN, LGARDEN,     &
+                    CBEM, HROAD_DIR, HWALL_OPT, LGREENROOF, ZFRAC_GR, LSOLAR_PANEL,    &
+					ZFRAC_PANEL, LPAR_RD_IRRIG, HNATVENT, CCOOL_COIL, CHEAT_COIL,      &
+					HZ0H, ZALB_ROOF, ZALB_ROAD, ZALB_WALL, ZEMIS_ROOF, ZEMIS_ROAD,     &
+					ZEMIS_WALL, ZH_TRAFFIC, ZLE_TRAFFIC, ZH_INDUSTRY, ZLE_INDUSTRY,    &
+					ZRD_START_MONTH, ZRD_END_MONTH, ZRD_START_HOUR, ZRD_END_HOUR,      &
+					ZRD_24H_IRRIG, ZEMIS_PANEL, ZALB_PANEL, ZEFF_PANEL, ZRESIDENTIAL,  & 
+					ZDT_RES, ZDT_OFF, PFLOOR_HEIGHT, ZINF, ZQIN, ZQIN_FRAD, ZV_VENT,   &
+					ZQIN_FLAT, ZGR, ZSHGC, PU_WIN, LSHADE, ZSHADE, ZSHGC_SH,           &
+					ZNATVENT, ZF_WATER_COND, ZF_WASTE_CAN, ZTCOOL_TARGET, ZHR_TARGET,  &
+                    ZTHEAT_TARGET, ZEFF_HEAT, ZCAP_SYS_HEAT, ZT_ADP, ZCAP_SYS_RAT,     &
+					ZM_SYS_RAT, ZCOP_RAT, CCH_BEM, ZROUGH_ROOF, ZROUGH_WALL, ZHC_ROOF, &
+					ZTC_ROOF, ZD_ROOF, ZHC_ROAD, ZTC_ROAD, ZD_ROAD, ZHC_WALL, ZTC_WALL,&
+					ZD_WALL, ZHC_FLOOR, ZTC_FLOOR, ZD_FLOOR, ZTI_BLD, ZQI_BLD
 !                                                                                     ! ||   ||
 !                                                                                     ! ||   ||
 !============================================================                         ! ||   ||
@@ -850,38 +868,20 @@ ZQI_BLD        = 0.0068794074 ! Indoor air specific humidity [kg kg-1]
 ! READ NAMELIST FORCING PARAMETERS
 !===========================================================================
 !===========================================================================
-NAMELIST /tebforcing/ forcing_path, IYEAR, IMONTH, IDAY, ZTIME_START, ZLON, &
-                      ZLAT, NUM_TIMESTEPS, TIMESTEP, ZZREF
 ! Read from file.
 open (action='read', file=namelist_forcing_path, iostat=rc, newunit=fu)
 read (nml=tebforcing, iostat=rc, unit=fu)
 forcing_path2=trim(forcing_path)
-print*, forcing_path, 'forcing_path'
-print*, forcing_path2, 'forcing_path2'
+
 !===========================================================================
 !===========================================================================
 ! READ NAMELIST PARAMETERS
 !===========================================================================
 !===========================================================================
-NAMELIST /tebparam/ ZBLD_HEIGHT, ZBLD, ZCAN_HW_RATIO, ZROAD_DIR, ZGARDEN, LGARDEN,     &
-                    CBEM, HROAD_DIR, HWALL_OPT, LGREENROOF, ZFRAC_GR, LSOLAR_PANEL,    &
-					ZFRAC_PANEL, LPAR_RD_IRRIG, HNATVENT, CCOOL_COIL, CHEAT_COIL,      &
-					HZ0H, ZALB_ROOF, ZALB_ROAD, ZALB_WALL, ZEMIS_ROOF, ZEMIS_ROAD,     &
-					ZEMIS_WALL, ZH_TRAFFIC, ZLE_TRAFFIC, ZH_INDUSTRY, ZLE_INDUSTRY,    &
-					ZRD_START_MONTH, ZRD_END_MONTH, ZRD_START_HOUR, ZRD_END_HOUR,      &
-					ZRD_24H_IRRIG, ZEMIS_PANEL, ZALB_PANEL, ZEFF_PANEL, ZRESIDENTIAL,  & 
-					ZDT_RES, ZDT_OFF, PFLOOR_HEIGHT, ZINF, ZQIN, ZQIN_FRAD, ZV_VENT,   &
-					ZQIN_FLAT, ZGR, ZSHGC, PU_WIN, LSHADE, ZSHADE, ZSHGC_SH,           &
-					ZNATVENT, ZF_WATER_COND, ZF_WASTE_CAN, ZTCOOL_TARGET, ZHR_TARGET,  &
-                    ZTHEAT_TARGET, ZEFF_HEAT, ZCAP_SYS_HEAT, ZT_ADP, ZCAP_SYS_RAT,     &
-					ZM_SYS_RAT, ZCOP_RAT, CCH_BEM, ZROUGH_ROOF, ZROUGH_WALL, ZHC_ROOF, &
-					ZTC_ROOF, ZD_ROOF, ZHC_ROAD, ZTC_ROAD, ZD_ROAD, ZHC_WALL, ZTC_WALL,&
-					ZD_WALL, ZHC_FLOOR, ZTC_FLOOR, ZD_FLOOR, ZTI_BLD, ZQI_BLD
 ! Read from file.
 open (action='read', file=namelist_path, iostat=rc, newunit=fu)
 read (nml=tebparam, iostat=rc, unit=fu)
 
-!===========================================================================
 !===========================================================================
 !===========================================================================
 !===========================================================================
@@ -1118,12 +1118,7 @@ OPEN(UNIT=26, FILE = HVAC_HEAT, ACCESS = 'APPEND',STATUS = 'REPLACE')
 ! -----------------------------------------------------------
 !
 INB_ATM = TIMESTEP / XTSTEP_SURF
-print*, 'TIMESTEP = ', TIMESTEP
-print*, 'INB_ATM = ', INB_ATM
-print*, 'NUM_TIMESTEPS = ', NUM_TIMESTEPS
 
-!                                          ! routines during a forcing time-step
-!                                          ! --> it defines the time-step for TEB
 DO JFORC_STEP= 1,NUM_TIMESTEPS - 1
    WRITE(*,FMT='(I5,A1,I5)') JFORC_STEP,'/',NUM_TIMESTEPS - 1
    !
